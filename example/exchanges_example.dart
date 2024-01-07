@@ -15,4 +15,9 @@ void main() async {
   // use some rest endpoints
   print(await binanceSpotClient.fetchServerTime());
   print(await binanceSpotClient.fetchAccountInfo());
+
+  // processes user data stream
+  await for (var data in binanceSpotClient.userDataStream()) {
+    print(data);
+  }
 }

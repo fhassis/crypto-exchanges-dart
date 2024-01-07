@@ -1,13 +1,20 @@
 import 'package:exchanges/src/binance/http_client.dart';
+import 'package:exchanges/src/binance/websocket_client.dart';
 
 class BinanceSpotClient {
   late final BinanceHttpClient _httpClient;
+  late final BinanceWebsocketClient _wsClient;
 
   BinanceSpotClient({required apiKey, required apiSecret, isTestnet = false}) {
     _httpClient = BinanceHttpClient(
       apiKey: apiKey,
       apiSecret: apiSecret,
       baseUrl: isTestnet ? 'testnet.binance.vision' : 'api.binance.com',
+    );
+    _wsClient = BinanceWebsocketClient(
+      baseUrl: isTestnet
+          ? 'wss://testnet.binance.vision/stream'
+          : 'wss://stream.binance.com:9443/stream',
     );
   }
 
@@ -34,5 +41,22 @@ class BinanceSpotClient {
       method: 'POST',
       path: '/api/v3/userDataStream',
     );
+  }
+
+  Stream<Map<String, dynamic>> userDataStream() async* {
+    // creates the listenKey
+    final rawData = await createListenKey();
+    final listenKey = rawData['listenKey'];
+
+    // subscribes to user data
+    _wsClient.subscribeToUserData(listenKey);
+
+    // keeps receiving user data stream
+    await for (var data in _wsClient.stream()) {
+      // TODO: parse stream data before yield
+      yield data;
+    }
+
+    // TODO: create renew task here
   }
 }
