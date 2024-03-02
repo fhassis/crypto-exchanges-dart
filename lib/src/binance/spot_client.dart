@@ -1,5 +1,5 @@
-import 'package:exchanges/src/binance/http_client.dart';
-import 'package:exchanges/src/binance/websocket_client.dart';
+import 'package:crypto_exchanges/src/binance/http_client.dart';
+import 'package:crypto_exchanges/src/binance/websocket_client.dart';
 
 class BinanceSpotClient {
   late final BinanceHttpClient _httpClient;

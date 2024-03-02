@@ -1,4 +1,4 @@
-import 'package:exchanges/exchanges.dart';
+import 'package:crypto_exchanges/exchanges.dart';
 import 'dart:io' show Platform;
 
 void main() async {

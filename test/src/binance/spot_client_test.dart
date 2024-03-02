@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:exchanges/src/binance/spot_client.dart';
+import 'package:crypto_exchanges/src/binance/spot_client.dart';
 import 'dart:io' show Platform;
 
 void main() {

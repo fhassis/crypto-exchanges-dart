@@ -1,15 +1,15 @@
-name: exchanges
+name: crypto_exchanges
 description: A basic client for cryptocurrency exchanges written in Dart.
 version: 0.0.1
-repository: https://gitlab.com/fhassis/exchanges
+repository: https://gitlab.com/fhassis/crypto-exchanges-dart
 publish_to: none
 
 environment:
-  sdk: ^3.2.3
+  sdk: ^3.3.0
 
 dependencies:
   crypto: ^3.0.3
 
 dev_dependencies:
   lints: ^3.0.0
-  test: ^1.25.0
+  test: ^1.25.2
