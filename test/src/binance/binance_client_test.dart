@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:crypto_exchanges/src/binance/spot_client.dart';
+import 'package:crypto_exchanges/src/binance/binance_client.dart';
 import 'dart:io' show Platform;
 
 void main() {
@@ -13,7 +13,7 @@ void main() {
     assert(environ['BINANCE_TESTNET'] != null);
 
     // create the binance spot client
-    final client = BinanceSpotClient(
+    final client = BinanceClient(
       apiKey: environ['BINANCE_API_KEY']!,
       apiSecret: environ['BINANCE_API_SECRET']!,
       isTestnet: bool.parse(environ['BINANCE_TESTNET']!),

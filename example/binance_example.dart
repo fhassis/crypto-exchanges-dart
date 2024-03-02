@@ -6,7 +6,7 @@ void main() async {
   var environ = Platform.environment;
 
   // create the binance spot client
-  var binanceSpotClient = BinanceSpotClient(
+  var binanceSpotClient = BinanceClient(
     apiKey: environ['BINANCE_API_KEY']!,
     apiSecret: environ['BINANCE_API_SECRET']!,
     isTestnet: bool.parse(environ['BINANCE_TESTNET']!),

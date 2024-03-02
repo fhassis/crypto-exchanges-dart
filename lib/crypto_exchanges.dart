@@ -1,3 +1,3 @@
 library;
 
-export 'src/binance/spot_client.dart';
+export 'src/binance/binance_client.dart';

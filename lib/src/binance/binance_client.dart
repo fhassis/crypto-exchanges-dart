@@ -1,11 +1,11 @@
 import 'package:crypto_exchanges/src/binance/http_client.dart';
 import 'package:crypto_exchanges/src/binance/websocket_client.dart';
 
-class BinanceSpotClient {
+class BinanceClient {
   late final BinanceHttpClient _httpClient;
   late final BinanceWebsocketClient _wsClient;
 
-  BinanceSpotClient({required apiKey, required apiSecret, isTestnet = false}) {
+  BinanceClient({required apiKey, required apiSecret, isTestnet = false}) {
     _httpClient = BinanceHttpClient(
       apiKey: apiKey,
       apiSecret: apiSecret,
