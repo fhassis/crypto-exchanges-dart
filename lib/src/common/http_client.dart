@@ -1,14 +1,14 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:crypto/crypto.dart';
+import 'package:http/http.dart';
 
-class BinanceHttpClient {
+class HttpClient {
   late final Hmac _hmac;
   late final String _apiKey;
   late final String _baseUrl;
-  final _http = HttpClient();
+  final _http = Client();
 
-  BinanceHttpClient(
+  HttpClient(
       {required String apiKey,
       required String apiSecret,
       required String baseUrl}) {
@@ -44,20 +44,19 @@ class BinanceHttpClient {
     }
 
     // creates the http request
-    final request =
-        await _http.openUrl(method, Uri.https(_baseUrl, path, params));
-    request.headers.set('X-MBX-APIKEY', _apiKey);
+    final request = Request(method, Uri.https(_baseUrl, path, params));
+    request.headers.addAll({'X-MBX-APIKEY': _apiKey});
 
     // sends the http request
-    final response = await request.close();
+    final streamedResponse = await request.send();
 
     // handles the http response
-    if (response.statusCode == 200) {
-      final data = await response.transform(utf8.decoder).join();
-      return jsonDecode(data);
+    if (streamedResponse.statusCode == 200) {
+      final response = await Response.fromStream(streamedResponse);
+      return jsonDecode(response.body);
     } else {
-      throw HttpException(
-          "HTTP status ${response.statusCode}: ${response.reasonPhrase}");
+      throw ClientException(
+          "HTTP status ${streamedResponse.statusCode}: ${streamedResponse.reasonPhrase}");
     }
   }
 }

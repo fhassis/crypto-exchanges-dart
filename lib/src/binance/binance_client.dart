@@ -1,12 +1,12 @@
-import 'package:crypto_exchanges/src/binance/http_client.dart';
+import 'package:crypto_exchanges/src/common/http_client.dart';
 import 'package:crypto_exchanges/src/binance/websocket_client.dart';
 
 class BinanceClient {
-  late final BinanceHttpClient _httpClient;
+  late final HttpClient _httpClient;
   late final BinanceWebsocketClient _wsClient;
 
   BinanceClient({required apiKey, required apiSecret, isTestnet = false}) {
-    _httpClient = BinanceHttpClient(
+    _httpClient = HttpClient(
       apiKey: apiKey,
       apiSecret: apiSecret,
       baseUrl: isTestnet ? 'testnet.binance.vision' : 'api.binance.com',
