@@ -24,14 +24,26 @@ const like = 'sample';
 
 ## Testing
 
-The tests depend on api key information stored in environment variables:
+The tests read API credentials from a `.env` file at the project root (ignored by git).
+Variables already defined in the environment (e.g. in CI) take precedence over the file.
 
-- Binance Spot:
-  - BINANCE_API_KEY (string)
-  - BINANCE_API_SECRET (string)
-  - BINANCE_TESTNET (`true`)
+```dotenv
+# Binance Spot (Ed25519 key pair)
+BINANCE_SPOT_API_KEY='...'
+BINANCE_SPOT_PRIVATE_KEY='-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----'
+BINANCE_SPOT_TESTNET='true'
 
-> ⚠️ An exception will be thrown if these variables are not defined, and the tests will not run.
+# OKX Spot
+OKX_SPOT_API_KEY='...'
+OKX_SPOT_API_SECRET='...'
+OKX_SPOT_SECRET_PHRASE='...'
+```
+
+- Each value must fit in a single line; encode PEM line breaks as literal `\n`.
+- Use single quotes so `$` and `#` inside values are kept as-is.
+- `BINANCE_SPOT_TESTNET` defaults to `true` when missing.
+
+> ⚠️ A test fails with a clear error if a required variable is missing.
 
 To execute the test, run the following command: 
 

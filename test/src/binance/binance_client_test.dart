@@ -1,37 +1,36 @@
-import 'package:test/test.dart';
 import 'package:crypto_exchanges/src/binance/binance_client.dart';
-import 'dart:io' show Platform;
+import 'package:test/test.dart';
+
+import '../../support/env.dart';
 
 void main() {
-  group('BinanceSpotClient', () {
-    // access the system environment variables
-    var environ = Platform.environment;
+  group('BinanceClient (spot)', () {
+    late BinanceClient client;
 
-    // check if environment variables exist
-    assert(environ['BINANCE_API_KEY'] != null);
-    assert(environ['BINANCE_API_SECRET'] != null);
-    assert(environ['BINANCE_TESTNET'] != null);
+    setUpAll(() {
+      client = BinanceClient(
+        apiKey: requireEnv('BINANCE_SPOT_API_KEY'),
+        privateKeyPem: requireEnv('BINANCE_SPOT_PRIVATE_KEY'),
+        // defaults to testnet so tests never hit a real account by accident
+        isTestnet: bool.parse(env['BINANCE_SPOT_TESTNET'] ?? 'true'),
+      );
+    });
 
-    // create the binance spot client
-    final client = BinanceClient(
-      apiKey: environ['BINANCE_API_KEY']!,
-      apiSecret: environ['BINANCE_API_SECRET']!,
-      isTestnet: bool.parse(environ['BINANCE_TESTNET']!),
-    );
+    tearDownAll(() => client.close());
 
     test('fetchServerTime returns data', () async {
-      var data = await client.fetchServerTime();
-      expect(data.containsKey("serverTime"), true);
+      final data = await client.fetchServerTime();
+      expect(data, contains('serverTime'));
     });
 
     test('fetchAccountInfo returns data', () async {
-      var data = await client.fetchAccountInfo();
-      expect(data.containsKey("makerCommission"), true);
+      final data = await client.fetchAccountInfo();
+      expect(data, contains('makerCommission'));
     });
 
     test('createListenKey returns data', () async {
-      var data = await client.createListenKey();
-      expect(data.containsKey("listenKey"), true);
+      final data = await client.createListenKey();
+      expect(data, contains('listenKey'));
     });
   });
 }

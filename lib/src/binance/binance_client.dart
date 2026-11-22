@@ -1,29 +1,36 @@
-import 'dart:convert';
-
-import 'package:crypto/crypto.dart';
+import 'package:crypto_exchanges/src/binance/ed25519_signer.dart';
 import 'package:crypto_exchanges/src/binance/websocket_client.dart';
 import 'package:crypto_exchanges/src/common/http_client.dart';
 
 class BinanceClient {
-  late final HttpClient _httpClient;
-  late final BinanceWebsocketClient _wsClient;
-  late final Hmac _hmac;
-  late final String _apiKey;
+  final HttpClient _httpClient;
+  final BinanceWebsocketClient _wsClient;
+  final Ed25519Signer _signer;
+  final String _apiKey;
 
-  BinanceClient({required apiKey, required apiSecret, isTestnet = false}) {
-    _httpClient = HttpClient(
-      baseUrl: isTestnet ? 'testnet.binance.vision' : 'api.binance.com',
-    );
-    _wsClient = BinanceWebsocketClient(
-      baseUrl: isTestnet
-          ? 'wss://testnet.binance.vision/stream'
-          : 'wss://stream.binance.com:9443/stream',
-    );
-    _hmac = Hmac(sha256, utf8.encode(apiSecret));
-    _apiKey = apiKey;
-  }
+  /// Creates a Binance Spot client authenticated with an Ed25519 key pair.
+  ///
+  /// [privateKeyPem] is the PKCS#8 PEM private key whose public key was
+  /// registered on Binance together with [apiKey].
+  BinanceClient({
+    required String apiKey,
+    required String privateKeyPem,
+    bool isTestnet = false,
+  }) : _httpClient = HttpClient(
+         baseUrl: isTestnet ? 'testnet.binance.vision' : 'api.binance.com',
+       ),
+       _wsClient = BinanceWebsocketClient(
+         baseUrl: isTestnet
+             ? 'wss://testnet.binance.vision/stream'
+             : 'wss://stream.binance.com:9443/stream',
+       ),
+       _signer = Ed25519Signer.fromPem(privateKeyPem),
+       _apiKey = apiKey;
 
-  Future<dynamic> _sendRequest({
+  /// Closes the underlying HTTP client.
+  void close() => _httpClient.close();
+
+  Future<Map<String, dynamic>> _sendRequest({
     required String method,
     required String path,
     Map<String, String>? params,
@@ -34,63 +41,54 @@ class BinanceClient {
       params ??= <String, String>{};
 
       // adds timestamp information required for signed endpoints
-      params['timestamp'] =
-          DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+      params['timestamp'] = DateTime.now()
+          .toUtc()
+          .millisecondsSinceEpoch
+          .toString();
 
-      // generate the query string based on the original query params
-      final queryString = utf8.encode(Uri(queryParameters: params).query);
+      // signs the exact query string that will be sent
+      final queryString = Uri(queryParameters: params).query;
 
-      // add signature to the query parameters
-      params['signature'] = _hmac.convert(queryString).toString();
+      // add signature to the query parameters (URL-encoded when sent)
+      params['signature'] = await _signer.sign(queryString);
     }
 
     // adds request headers
-    var headers = {'X-MBX-APIKEY': _apiKey};
+    final headers = {'X-MBX-APIKEY': _apiKey};
 
     // sends the http request
-    return await _httpClient.sendRequest(
+    final response = await _httpClient.sendRequest(
       method: method,
       path: path,
       queryParams: params,
       headers: headers,
     );
+    return response as Map<String, dynamic>;
   }
 
   /// Fetches the server time.
-  Future<Map<String, dynamic>> fetchServerTime() async {
-    return await _sendRequest(
-      method: 'GET',
-      path: '/api/v3/time',
-    ) as Map<String, dynamic>;
-  }
+  Future<Map<String, dynamic>> fetchServerTime() =>
+      _sendRequest(method: 'GET', path: '/api/v3/time');
 
   /// Fetches the user account information.
-  Future<Map<String, dynamic>> fetchAccountInfo() async {
-    return await _sendRequest(
-      method: 'GET',
-      path: '/api/v3/account',
-      isSigned: true,
-    );
-  }
+  Future<Map<String, dynamic>> fetchAccountInfo() =>
+      _sendRequest(method: 'GET', path: '/api/v3/account', isSigned: true);
 
   /// Creates a listen key to be used in user data streams.
-  Future<Map<String, dynamic>> createListenKey() async {
-    return await _sendRequest(
-      method: 'POST',
-      path: '/api/v3/userDataStream',
-    );
-  }
+  Future<Map<String, dynamic>> createListenKey() =>
+      _sendRequest(method: 'POST', path: '/api/v3/userDataStream');
 
+  /// Stream of user data events.
   Stream<Map<String, dynamic>> userDataStream() async* {
     // creates the listenKey
     final rawData = await createListenKey();
-    final listenKey = rawData['listenKey'];
+    final listenKey = rawData['listenKey'] as String;
 
     // subscribes to user data
     _wsClient.subscribeToUserData(listenKey);
 
     // keeps receiving user data stream
-    await for (var data in _wsClient.stream()) {
+    await for (final data in _wsClient.stream()) {
       // TODO: parse stream data before yield
       yield data;
     }

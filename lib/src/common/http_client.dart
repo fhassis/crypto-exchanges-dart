@@ -3,19 +3,17 @@ import 'dart:convert';
 import 'package:http/http.dart';
 
 class HttpClient {
-  late final String _baseUrl;
-  final _http = Client();
+  final String _baseUrl;
+  final Client _http = Client();
 
-  HttpClient({required String baseUrl}) {
-    _baseUrl = baseUrl;
-  }
+  HttpClient({required String baseUrl}) : _baseUrl = baseUrl;
 
   /// Closes the inner http client.
   void close() {
     _http.close();
   }
 
-  /// Sends the HTTP request to Binance server and handles the response.
+  /// Sends the HTTP request to the exchange server and handles the response.
   Future<dynamic> sendRequest({
     required String method,
     required String path,
@@ -31,7 +29,7 @@ class HttpClient {
     }
 
     // sends the http request
-    final streamedResponse = await request.send();
+    final streamedResponse = await _http.send(request);
 
     // handles the http response
     if (streamedResponse.statusCode == 200) {
@@ -40,7 +38,8 @@ class HttpClient {
     } else {
       // TODO: create a custom exception to capture status code and message
       throw Exception(
-          "HTTP ${streamedResponse.statusCode}: ${streamedResponse.reasonPhrase}");
+        'HTTP ${streamedResponse.statusCode}: ${streamedResponse.reasonPhrase}',
+      );
     }
   }
 }

@@ -1,30 +1,28 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 // TODO: replace print statements by dart logging
 
 class BinanceWebsocketClient {
   final Set<String> _subscriptions = {};
-  late final String _baseUrl;
+  final String _baseUrl;
   WebSocket? _ws;
 
-  BinanceWebsocketClient({required String baseUrl}) {
-    _baseUrl = baseUrl;
-  }
+  BinanceWebsocketClient({required String baseUrl}) : _baseUrl = baseUrl;
 
   String _getSubscriptionMessage({
     required List<String> topics,
     required bool isSubscribe,
   }) {
     return jsonEncode({
-      "method": isSubscribe ? 'SUBSCRIBE' : 'UNSUBSCRIBE',
-      "params": topics,
-      "id": DateTime.now().toUtc().millisecondsSinceEpoch,
+      'method': isSubscribe ? 'SUBSCRIBE' : 'UNSUBSCRIBE',
+      'params': topics,
+      'id': DateTime.now().toUtc().millisecondsSinceEpoch,
     });
   }
 
   /// Sends a subscribe / unsubscribe message over websocket.
-  _sendSubscription(String payload) {
+  void _sendSubscription(String payload) {
     if (_ws?.readyState == WebSocket.open) {
       _ws!.add(payload);
     } else {
@@ -40,17 +38,19 @@ class BinanceWebsocketClient {
 
       // subscribes to the topics topics
       if (_subscriptions.isNotEmpty) {
-        _sendSubscription(_getSubscriptionMessage(
-          topics: _subscriptions.toList(),
-          isSubscribe: true,
-        ));
+        _sendSubscription(
+          _getSubscriptionMessage(
+            topics: _subscriptions.toList(),
+            isSubscribe: true,
+          ),
+        );
       }
 
       // receives messages
       print('DEBUG: waiting for messages');
-      await for (var message in _ws!) {
+      await for (final message in _ws!) {
         try {
-          yield jsonDecode(message) as Map<String, dynamic>;
+          yield jsonDecode(message as String) as Map<String, dynamic>;
         } on FormatException catch (e) {
           print('ERROR: invalid json message: $message - $e');
         }
@@ -61,7 +61,8 @@ class BinanceWebsocketClient {
     } on SocketException catch (e) {
       // log an error message
       print(
-          'ERROR: ${e.osError?.errorCode} | ${e.osError?.message.trimRight()}');
+        'ERROR: ${e.osError?.errorCode} | ${e.osError?.message.trimRight()}',
+      );
 
       // removes reference
       _ws = null;
@@ -85,7 +86,7 @@ class BinanceWebsocketClient {
     _sendSubscription(message);
   }
 
-  /// Subscribes to User Data stream.
+  /// Unsubscribes from User Data stream.
   void unsubscribeFromUserData(String listenKey) {
     // remove item from the subscription list
     _subscriptions.remove(listenKey);

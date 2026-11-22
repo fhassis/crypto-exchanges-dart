@@ -1,15 +1,15 @@
 import 'package:crypto_exchanges/crypto_exchanges.dart';
-import 'dart:io' show Platform;
+import 'package:dotenv/dotenv.dart';
 
 void main() async {
-  // access the system environment variables
-  var environ = Platform.environment;
+  // loads the .env file at the project root (platform variables take precedence)
+  final env = DotEnv(includePlatformEnvironment: true, quiet: true)..load();
 
   // create the binance spot client
-  var binanceSpotClient = BinanceClient(
-    apiKey: environ['BINANCE_API_KEY']!,
-    apiSecret: environ['BINANCE_API_SECRET']!,
-    isTestnet: bool.parse(environ['BINANCE_TESTNET']!),
+  final binanceSpotClient = BinanceClient(
+    apiKey: env['BINANCE_SPOT_API_KEY']!,
+    privateKeyPem: env['BINANCE_SPOT_PRIVATE_KEY']!,
+    isTestnet: bool.parse(env['BINANCE_SPOT_TESTNET'] ?? 'true'),
   );
 
   // use some rest endpoints
@@ -17,7 +17,7 @@ void main() async {
   print(await binanceSpotClient.fetchAccountInfo());
 
   // processes user data stream
-  await for (var data in binanceSpotClient.userDataStream()) {
+  await for (final data in binanceSpotClient.userDataStream()) {
     print(data);
   }
 }
