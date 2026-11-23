@@ -1,0 +1,18 @@
+{
+  "captured_at": "2026-09-18T00:00:00Z",
+  "note": "The canonical string below was signed with the live Binance spot TESTNET secret and answered HTTP 200 on GET /api/v3/myTrades. The live secret is not recorded; `signature` is that same string signed with `dummy_secret`, which is RFC 8032 section 7.1 test 1 wrapped as PKCS#8 -- published, so the vector is reproducible by anyone and discloses nothing.",
+  "method": "GET",
+  "host": "https://testnet.binance.vision",
+  "request_path": "/api/v3/myTrades",
+  "query_string": "fromId=0&limit=1000&symbol=BTCUSDT&recvWindow=5000&timestamp=1789769262377",
+  "body": "",
+  "prehash": "fromId=0&limit=1000&symbol=BTCUSDT&recvWindow=5000&timestamp=1789769262377",
+  "encoding": "base64",
+  "algorithm": "Ed25519",
+  "dummy_secret_pem": "-----BEGIN PRIVATE KEY-----\nMC4CAQAwBQYDK2VwBCIEIJ1hsZ3v/VpguoRK9JLsLMREScVpezJpGXA7rAMcrn9g\n-----END PRIVATE KEY-----\n",
+  "signature": "s9pRm7fBPbM1FOuoycYJxFuL2FyPdgFZ28eO6zNLaPwM+Nh+OStqzsP1JZ5hYkb1IwU7FI8jkx+dWV82cZ8eBw==",
+  "live_status": 200,
+  "signature_url_encoded_on_the_wire": true,
+  "unencoded_signature_also_accepted": true,
+  "unencoded_note": "A base64 signature containing `+` was accepted BOTH url-encoded and raw on 2026-09-18. The client encodes it anyway: a raw `+` is a space under form decoding, and whether this venue form-decodes is its choice to change, not ours."
+}

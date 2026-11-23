@@ -7,6 +7,16 @@ A basic client for cryptocurrency exchanges written in Dart.
 Basic REST and Websocket connections with the following exchanges:
 
 - [x] Binance Spot
+- [x] OKX Spot
+
+Both implement `SpotExchange`: instruments, tickers, candles (REST and live),
+balances, place/cancel/fetch orders, open orders and a raw account event stream.
+Market data needs no credentials.
+
+Websocket streams are broadcast and shared: every listener of
+`candleStream(symbol, timeframe)` shares one venue subscription, opened on the
+first listen and closed after the last cancel, and re-established after a
+dropped connection.
 
 ## Getting started
 
@@ -37,11 +47,13 @@ BINANCE_SPOT_TESTNET='true'
 OKX_SPOT_API_KEY='...'
 OKX_SPOT_API_SECRET='...'
 OKX_SPOT_SECRET_PHRASE='...'
+OKX_SPOT_DEMO='true'
 ```
 
 - Each value must fit in a single line; encode PEM line breaks as literal `\n`.
 - Use single quotes so `$` and `#` inside values are kept as-is.
-- `BINANCE_SPOT_TESTNET` defaults to `true` when missing.
+- `BINANCE_SPOT_TESTNET` and `OKX_SPOT_DEMO` default to `true` when missing.
+- The client tests place and cancel a small limit order far below market on the testnet/demo account.
 
 > ⚠️ A test fails with a clear error if a required variable is missing.
 

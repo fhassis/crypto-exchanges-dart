@@ -1,0 +1,11 @@
+{
+  "captured_at": "2026-09-13T00:54:14.396Z",
+  "note": "The canonical string below was signed with the live demo secret at this timestamp and answered HTTP 200. The secret is not recorded; `signature` below is the same string signed with `dummy_secret`, so the vector is reproducible and discloses nothing.",
+  "timestamp": "2026-09-13T00:54:14.396Z",
+  "method": "GET",
+  "request_path": "/api/v5/account/balance",
+  "body": "",
+  "prehash": "2026-09-13T00:54:14.396ZGET/api/v5/account/balance",
+  "dummy_secret": "0123456789abcdef0123456789abcdef",
+  "signature": "MNXrTkzHwh+r+GAnoRIEHCpqFLgPqwc+RuWSah26BRc="
+}
