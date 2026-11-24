@@ -8,11 +8,11 @@ void main() {
   group('OkxClient (spot)', () {
     spotContract(
       () => OkxClient(
-        apiKey: requireEnv('OKX_SPOT_API_KEY'),
-        secret: requireEnv('OKX_SPOT_API_SECRET'),
-        passphrase: requireEnv('OKX_SPOT_SECRET_PHRASE'),
+        apiKey: requireEnv('OKX_API_KEY'),
+        secret: requireEnv('OKX_SECRET_KEY'),
+        passphrase: requireEnv('OKX_PASSPHRASE'),
         // defaults to demo trading so tests never hit a real account by accident
-        isDemo: bool.parse(env['OKX_SPOT_DEMO'] ?? 'true'),
+        isDemo: bool.parse(env['OKX_DEMO'] ?? 'true'),
       ),
       symbol: 'BTC-USDT',
     );

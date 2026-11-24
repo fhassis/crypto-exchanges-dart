@@ -43,16 +43,16 @@ BINANCE_SPOT_API_KEY='...'
 BINANCE_SPOT_PRIVATE_KEY='-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----'
 BINANCE_SPOT_TESTNET='true'
 
-# OKX Spot
-OKX_SPOT_API_KEY='...'
-OKX_SPOT_API_SECRET='...'
-OKX_SPOT_SECRET_PHRASE='...'
-OKX_SPOT_DEMO='true'
+# OKX (one key for spot, futures and the other products)
+OKX_API_KEY='...'
+OKX_SECRET_KEY='...'
+OKX_PASSPHRASE='...'
+OKX_DEMO='true'
 ```
 
 - Each value must fit in a single line; encode PEM line breaks as literal `\n`.
 - Use single quotes so `$` and `#` inside values are kept as-is.
-- `BINANCE_SPOT_TESTNET` and `OKX_SPOT_DEMO` default to `true` when missing.
+- `BINANCE_SPOT_TESTNET` and `OKX_DEMO` default to `true` when missing.
 - The client tests place and cancel a small limit order far below market on the testnet/demo account.
 
 > ⚠️ A test fails with a clear error if a required variable is missing.
